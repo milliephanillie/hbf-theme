@@ -1,0 +1,16 @@
+.modal-sw {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(255, 255, 255, 0.9); /* Added transparency */
+    z-index: 90000;
+    padding: 30px;
+    border: 1px solid;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.5);
+}
+#printInvoice, #completeProcess {
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}

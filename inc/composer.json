@@ -1,0 +1,15 @@
+{
+    "name": "phili/hbf-theme",
+    "type": "wordpress-theme",
+    "autoload": {
+        "psr-4": {
+            "Harrison\\": "src/"
+        }
+    },
+    "require": {
+        "picqer/php-barcode-generator": "^2.3",
+        "dompdf/dompdf": "^1.0",
+        "htmlburger/carbon-fields": "^3.6"
+    },
+    "license": "GPL-2.0-or-later"
+}
