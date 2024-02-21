@@ -1,7 +1,11 @@
 <?php
-// Skip cart page for manual orders
-add_filter( 'wp_head', 'hfood_skip_cart_redirect_checkout' );
 
+// Skip cart page for manual orders
+
+/**
+ * HBF_CheckoutFlowHelper
+ */
+add_filter( 'wp_head', 'hfood_skip_cart_redirect_checkout' );
 function hfood_skip_cart_redirect_checkout( $url ) {
 	global $post;
 
@@ -9,7 +13,7 @@ function hfood_skip_cart_redirect_checkout( $url ) {
 		$user = wp_get_current_user();
 
 		if($post->post_name == 'cart' && (in_array('administrator', $user->roles) || is_old_admin())){
-			if(WC()->cart->get_cart_contents_count() == 0){
+			if(\WC()->cart->get_cart_contents_count() == 0){
 				?>
 				<script>
                     window.location = '/manual-orders';
@@ -25,9 +29,11 @@ function hfood_skip_cart_redirect_checkout( $url ) {
 	}
 }
 
-//New Create Customer Modal
 
-// Adding buttons to the admin bar under "Manual Orders"
+
+/**
+ * HBF_ManualOrderItem
+ */
 add_action('admin_bar_menu', 'manual_order_item_menu', 500);
 function manual_order_item_menu($admin_bar) {
     global $current_user;
@@ -39,308 +45,176 @@ function manual_order_item_menu($admin_bar) {
             'href'  => site_url('/manual-orders'),
             'parent' => 'top-secondary',
         ));
-
-        // Check if the current page is the manual orders page
-        global $wp;
-        $current_url = home_url(add_query_arg(array(), $wp->request));
-        $manual_orders_page_url = site_url('/manual-orders');
-        if ($current_url === $manual_orders_page_url) {
-            // Add the "Create Customer" button only if on the manual orders page
-            $admin_bar->add_menu(array(
-                'id' => 'create-customer',
-                'title' => '<button id="createCustomerBtn" style="background-color: #0073aa; color: white; border: none; padding: 10px 20px; margin-right: 10px; border-radius: 10px; cursor: pointer;">CREATE CUSTOMER</button>',
-                'parent' => 'manual-order-custom',
-            ));
-        }
-    }
-}
-
-// Adding modals and JavaScript logic
-add_action('wp_footer', 'add_modal_and_script');
-function add_modal_and_script() {
-    if (current_user_can('view_extra_fields')) {
-        // Check if the current page is the manual orders page
-        global $wp;
-        $current_url = home_url(add_query_arg(array(), $wp->request));
-        $manual_orders_page_url = site_url('/manual-orders');
-        if ($current_url !== $manual_orders_page_url) {
-            return; // Exit the function if not on the manual orders page
-        }
-
-        echo '<script type="text/javascript">var ajaxurl = "' . admin_url('admin-ajax.php') . '";</script>';
-        ?>
-        <div id="selectCustomerModal" class="custom-modal" style="display:none;">
-            <button id="closeSelectCustomerModal" class="close-button">&times;</button>
-            <h2>Select Customer</h2>
-            <form id="selectCustomerForm" class="custom-form">
-                <label for="customerSearch">Search Customer:</label>
-                <input type="text" id="customerSearch" name="customerSearch">
-                <button type="submit">Search</button>
-            </form>
-        </div>
-
-        <div id="createCustomerModal" class="custom-modal" style="display:none;">
-            <button id="closeCreateCustomerModal" class="close-button">&times;</button>
-            <h2>Create Customer</h2>
-					<form id="createCustomerForm" class="create-customer-form">
-			<!-- Billing Information -->
-			<label for="billing_first_name">First Name:</label>
-			<input type="text" id="billing_first_name" name="billing_first_name">
-
-			<label for="billing_last_name">Last Name:</label>
-			<input type of="text" id="billing_last_name" name="billing_last_name">
-
-			<label for="billing_company">Company:</label>
-			<input type="text" id="billing_company" name="billing_company">
-
-			<label for="billing_address_1">Address 1:</label>
-			<input type="text" id="billing_address_1" name="billing_address_1">
-
-			<label for="billing_address_2">Address 2:</label>
-			<input type="text" id="billing_address_2" name="billing_address_2">
-
-			<label for="billing_city">City:</label>
-			<input type="text" id="billing_city" name="billing_city">
-
-			<label for="billing_state">State:</label>
-			<select id="billing_state" name="billing_state">
-				<!-- States will be populated here -->
-			</select>
-
-			<label for="billing_postcode">Postcode:</label>
-			<input type="text" id="billing_postcode" name="billing_postcode">
-
-			<label for="billing_country">Country:</label>
-			<select id="billing_country" name="billing_country">
-				<!-- Populate this dropdown with countries -->
-			</select>
-
-			<label for="billing_phone">Phone:</label>
-			<input type="text" id="billing_phone" name="billing_phone">
-
-			<label for="billing_email">Email:</label>
-			<input type="email" id="billing_email" name="billing_email">
-
-			<!-- Account Information -->
-			<label for="account_password">Password:</label>
-			<input type="password" id="account_password" name="account_password">
-
-			<!-- Password Confirmation -->
-			<label for="account_password_confirm">Confirm Password:</label>
-			<input type="password" id="account_password_confirm" name="account_password_confirm">
-
-			<!-- Send Login Link Option -->
-			<label><input type="checkbox" id="sendLoginLink" name="sendLoginLink"> Send Login Link via Email</label>
-
-			<!-- Distributor Role Assignment -->
-			<label><input type="checkbox" id="isDistributor" name="isDistributor"> Assign Distributor Role</label>
-						
-			<!-- Export Role Assignment -->
-			<label><input type="checkbox" id="isExport" name="isExport"> Assign Export Role</label>
-
-			<!-- International Role Assignment -->
-			<label><input type="checkbox" id="isInternational" name="isInternational"> Assign International Role</label>
-
-			<!-- Additional Fields as Needed -->
-			<!-- ... -->
-			<!-- Toggle Credit Card Fields 
-			<label><input type="checkbox" id="toggleCreditCard" name="toggleCreditCard"> Add Credit Card Info</label> -->
-
-		
-			<!-- Credit Card Fields --> 
-			<div id="creditCardFields" style="display:none;">
-				<label for="customerCardNumber">Card Number:</label>
-				<input type="text" id="customerCardNumber" name="customerCardNumber">
-				<label for="customerCardExpiry">Card Expiry:</label>
-				<input type="text" id="customerCardExpiry" name="customerCardExpiry">
-				<label for="customerCardCVC">CVC:</label>
-				<input type="text" id="customerCardCVC" name="customerCardCVC">
-			</div>
-
-			<button type="submit">Create</button>
-		</form>
-
-        </div>
-
-        <script type="text/javascript">
-            jQuery(document).ready(function($) {
-                    // Close modal buttons
-    $('#closeSelectCustomerModal, #closeCreateCustomerModal').click(function() {
-        $.unblockUI();
-    });
-
-    // Open Create Customer Modal
-    $('#createCustomerBtn').click(function() {
-        $.blockUI({
-            message: $('#createCustomerModal'),
-            css: {
-                top:  '40%',
-                left: '50%',
-                marginLeft: '-300px',
-                marginTop: '-150px',
-                width: '600px',
-                height: '600px',
-				borderRadius: '10px'
-            }
-        });
-    });
-
-    // Toggle Credit Card Fields
-    $('#toggleCreditCard').change(function() {
-        if($(this).is(":checked")) {
-            $('#creditCardFields').show();
-        } else {
-            $('#creditCardFields').hide();
-        }
-    });
-
-    // Create Customer Form Submission
-    $('#createCustomerForm').submit(function(e) {
-        e.preventDefault();
-
-        // Client-side Validation
-        if ($('#billing_email').val() === '' || !validateEmail($('#billing_email').val())) {
-            alert('Invalid email.');
-            return;
-        }
-        if (!$('#sendLoginLink').is(":checked")) {
-            if ($('#account_password').val().length < 6) {
-                alert('Password must be at least 6 characters.');
-                return;
-            }
-
-            // Password Confirmation
-            if ($('#account_password').val() !== $('#account_password_confirm').val()) {
-                alert('Passwords do not match.');
-                return;
-            }
-        }
-
-        // New: Send Login Link Option
-        var sendLoginLink = $('#sendLoginLink').is(":checked");
-
-        // ... (Add more validation as needed)
-
-        $.ajax({
-            url: ajaxurl,
-            type: 'POST',
-            data: {
-                action: 'create_woocommerce_customer',
-                billing_email: $('#billing_email').val(),
-                account_password: $('#account_password').val(),
-                billing_first_name: $('#billing_first_name').val(),
-                billing_last_name: $('#billing_last_name').val(),
-                billing_company: $('#billing_company').val(),
-                billing_address_1: $('#billing_address_1').val(),
-                billing_address_2: $('#billing_address_2').val(),
-                billing_city: $('#billing_city').val(),
-                billing_postcode: $('#billing_postcode').val(),
-                billing_country: $('#billing_country').val(),
-                billing_state: $('#billing_state').val(),
-                billing_phone: $('#billing_phone').val(),
-                account_password_confirm: $('#account_password_confirm').val(),
-                sendLoginLink: sendLoginLink,
-				isDistributor: $('#isDistributor').is(":checked"),
-				isExport: $('#isExport').is(":checked"),
-    			isInternational: $('#isInternational').is(":checked"),
-            },
-            success: function(response) {
-							try {
-								var parsedResponse = JSON.parse(response);
-								if (parsedResponse.success) {
-									if (confirm('Success: ' + parsedResponse.message)) {
-										if (parsedResponse.redirect) {
-											window.location.href = parsedResponse.redirect;
-										} else {
-											$.unblockUI();
-											location.reload();
-										}
-									}
-								} else {
-									alert('Could not create customer: ' + parsedResponse.message);
-								}
-							} catch (e) {
-								console.error('Error parsing server response:', e);
-								alert('An error occurred while processing your request. Please try again.');
-							}
-						}
-
-                    });
-                });
-
-    // Helper function to validate email
-    function validateEmail(email) {
-        var re = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return re.test(email);
-    }
-});
-
-			// Populate country dropdown
-			var countries = <?php echo json_encode(WC()->countries->get_countries()); ?>;
-			var $countryDropdown = $('#billing_country');
-			$.each(countries, function(key, value) {
-				$countryDropdown.append($('<option>', {
-					value: key,
-					text: value
-				}));
-			});
-
-			// Set default country to United States
-			$('#billing_country').val('US');
-			
-			
-			// Populate states dropdown
-					function populateStates(country) {
-						var states = <?php echo json_encode(WC()->countries->get_states()); ?>;
-						var $stateDropdown = $('#billing_state');
-						$stateDropdown.empty();
-
-						if (states[country]) {
-							$.each(states[country], function(key, value) {
-								$stateDropdown.append($('<option>', {
-									value: key,
-									text: value
-								}));
-							});
-						} else {
-							$stateDropdown.append($('<option>', {
-								value: '',
-								text: 'N/A'
-							}));
-						}
-					}
-
-					// Update states dropdown when country changes
-					$('#billing_country').change(function() {
-						populateStates($(this).val());
-					});
-
-					// Populate states for the default country (United States)
-					populateStates('US');
-			
-			</script>
-        <?php
     }
 }
 
 
-//End New Customer Modal
+/**
+ * HBF_UpdateShippingMethod
+ */
+function update_shipping_method() {
+	if (isset($_POST['shipping_method']) && !empty($_POST['shipping_method'])) {
+		$chosen_methods = WC()->session->get('chosen_shipping_methods');
+		$chosen_methods[0] = wc_clean($_POST['shipping_method']);
+		WC()->session->set('chosen_shipping_methods', $chosen_methods);
 
+		// Recalculate the cart totals
+		WC()->cart->calculate_totals();
 
+		// Return the updated totals
+		echo json_encode(array(
+			'success' => true,
+			'message' => 'Shipping method updated successfully.',
+			'subtotal' => WC()->cart->get_cart_subtotal(),
+			'total' => WC()->cart->get_total()
+		));
+	} else {
+		echo json_encode(array(
+			'success' => false,
+			'message' => 'Invalid or missing shipping method.'
+		));
+	}
+	wp_die(); 
+}
+
+add_action('wp_ajax_update_shipping_method', 'update_shipping_method');
+add_action('wp_ajax_nopriv_update_shipping_method', 'update_shipping_method');
+
+/**
+ * HBF_CheckoutFlowHelper
+ */
 add_filter('woocommerce_get_stock_html', 'custom_remove_in_stock_text', 10, 2);
+function custom_remove_in_stock_text( $html, $product ) {
+	if ( $product->is_in_stock() ) {
+		return '';
+	}
+	return $html;
+}
 
 //User Search
 
-// AJAX handler for fetching previous orders
+/**
+ * HBF_SearchUsersForManualOrders
+ */
+add_action('wp_ajax_search_users_for_manual_orders', 'search_users_for_manual_orders');
+add_action('wp_ajax_nopriv_search_users_for_manual_orders', 'search_users_for_manual_orders');
+function search_users_for_manual_orders() {
+    // Check if a search term is set
+    if (!isset($_POST['search_term'])) {
+        echo json_encode(array('success' => false, 'message' => 'No search term provided.'));
+        wp_die();
+    }
+
+    $search_term = sanitize_text_field($_POST['search_term']);
+
+    // Query users based on the search term
+    $users_by_email_and_name = get_users(array(
+        'search' => '*' . esc_attr($search_term) . '*',
+        'search_columns' => array('user_login', 'user_nicename', 'user_email'),
+    ));
+
+    // Query users by billing phone number
+    $users_by_billing_phone = get_users(array(
+        'meta_query' => array(
+            array(
+                'key' => 'billing_phone',
+                'value' => $search_term,
+                'compare' => 'LIKE'
+            )
+        )
+    ));
+
+    // Query users by shipping phone number
+    $users_by_shipping_phone = get_users(array(
+        'meta_key' => 'shipping_phone',
+        'meta_value' => '%' . $search_term . '%',  // Add wildcards
+        'meta_compare' => 'LIKE',
+    ));
+
+    // Query users by billing company name
+    $users_by_shipping_company = get_users(array(
+        'meta_query' => array(
+            array(
+                'key' => 'shipping_company',
+                'value' => $search_term,
+                'compare' => 'LIKE'
+            )
+        )
+    ));
+
+    // Merge the results from all queries and remove duplicates
+    $users = array_unique(array_merge($users_by_email_and_name, $users_by_billing_phone, $users_by_shipping_phone, $users_by_shipping_company), SORT_REGULAR);
+
+    // Prepare the response
+    $response = array();
+    foreach ($users as $user) {
+        $user_meta = get_user_meta($user->ID);
+        $response[] = array(
+            'id' => $user->ID,
+            'name' => $user->display_name,
+            'email' => $user->user_email,
+            // Add the billing and shipping phone to the response
+            'billing_phone' => !empty($user_meta['billing_phone']) ? $user_meta['billing_phone'][0] : '',
+			'company' => !empty($user_meta['shipping_company']) ? $user_meta['shipping_company'][0] : 'No company',
+            'shipping_phone' => !empty($user_meta['shipping_phone']) ? $user_meta['shipping_phone'][0] : '',
+        );
+    }
+
+    // Return the results as a JSON response
+    echo json_encode(array('success' => true, 'users' => $response));
+    wp_die();
+}
+
+/**
+ * HBF_OrderData
+ */
 add_action('wp_ajax_fetch_previous_orders', 'fetch_previous_orders');
 add_action('wp_ajax_nopriv_fetch_previous_orders', 'fetch_previous_orders');
-// AJAX handler for fetching previous orders for credits
+function fetch_previous_orders() {
+	if (!isset($_POST['user_id'])) {
+		echo json_encode(array('success' => false, 'message' => 'No user ID provided.'));
+		wp_die();
+	}
+	
+    // Check if the user has 'manual_ordering' or 'view_extra_fields' capability
+    if (!current_user_can('manual_ordering') && !current_user_can('view_extra_fields')) {
+        echo json_encode(array('success' => false, 'message' => 'Permission denied.'));
+        wp_die();
+    }
+
+	if (!function_exists('wc_get_orders')) {
+		echo json_encode(array('success' => false, 'message' => 'WooCommerce not active.'));
+		wp_die();
+	}
+
+	$user_id = intval($_POST['user_id']);
+
+	// Fetch the previous orders for the user
+	$orders = wc_get_orders(array('customer_id' => $user_id, 'limit' => -1));
+
+	$response = array();
+	foreach ($orders as $order) {
+		$response[] = array(
+			'order_id' => $order->get_id(),
+			'order_date' => $order->get_date_created()->date('Y-m-d H:i:s'),
+			'order_total' => $order->get_total(),
+		);
+	}
+
+	if (empty($response)) {
+		echo json_encode(array('success' => false, 'message' => 'No orders found for this user.'));
+		wp_die();
+	}
+
+	echo json_encode(array('success' => true, 'orders' => $response));
+	wp_die();
+}
+
+/**
+ * HBF_OrderData
+ */
 add_action('wp_ajax_fetch_previous_orders_for_credits', 'fetch_previous_orders_for_credits');
 add_action('wp_ajax_nopriv_fetch_previous_orders_for_credits', 'fetch_previous_orders_for_credits');
-
-
-
-
 function fetch_previous_orders_for_credits() {
     if (!isset($_POST['user_id'])) {
         echo json_encode(array('success' => false, 'message' => 'No user ID provided.'));
@@ -386,11 +260,11 @@ function fetch_previous_orders_for_credits() {
     wp_die();
 }
 
-// AJAX handler to populate the cart with the selected order
+/**
+ * AJAX/HBF_Cart
+ */
 add_action('wp_ajax_populate_cart_with_order', 'populate_cart_with_order');
 add_action('wp_ajax_nopriv_populate_cart_with_order', 'populate_cart_with_order');
-
-
 function populate_cart_with_order() {
 	if (!isset($_POST['order_id'])) {
 		echo json_encode(array('success' => false, 'message' => 'No order ID provided.'));
@@ -438,34 +312,85 @@ function populate_cart_with_order() {
 	wp_die();
 }
 
-// AJAX handler to empty the cart
+/**
+ * AJAX/HBF_Cart
+ */
 add_action('wp_ajax_empty_cart', 'empty_cart');
 add_action('wp_ajax_nopriv_empty_cart', 'empty_cart');
-
 function empty_cart() {
 	WC()->cart->empty_cart();
 	echo json_encode(array('success' => true));
 	wp_die();
 }
 
-// AJAX handler to check the cart status
+/**
+ * AJAX/HBF_Cart
+ */
 add_action('wp_ajax_check_cart_status', 'check_cart_status');
 add_action('wp_ajax_nopriv_check_cart_status', 'check_cart_status');
-
 function check_cart_status() {
 	$cart_has_items = !WC()->cart->is_empty();
 	echo json_encode(array('cart_has_items' => $cart_has_items));
 	wp_die();
 }
 
-// AJAX handler to fetch order details
+/**
+ * AJAX/HBF_OrderData
+ */
+add_action('wp_ajax_fetch_order_details', 'fetch_order_details');
+add_action('wp_ajax_nopriv_fetch_order_details', 'fetch_order_details');
+function fetch_order_details() {
+    if (!isset($_POST['order_id'])) {
+        echo json_encode(array('success' => false, 'message' => 'No order ID provided.'));
+        wp_die();
+    }
 
+    $order_id = intval($_POST['order_id']);
+    $order = wc_get_order($order_id);
 
-// AJAX handler to fetch order details for Credit
+    if (!$order) {
+        echo json_encode(array('success' => false, 'message' => 'Invalid order ID.'));
+        wp_die();
+    }
+
+    $order_items = array();
+    $item_count = 0; // Initialize item count
+    $product_total = 0; // Initialize product total
+
+    foreach ($order->get_items() as $item_id => $item) {
+        $product_id = $item->get_product_id();
+        $product = wc_get_product($product_id);
+        $product_name = $item->get_name();
+        $item_price = wc_format_decimal($order->get_item_total($item, false, false), 2); // Get item total excluding taxes and discounts
+        $item_quantity = $item->get_quantity();
+
+        $order_items[] = array(
+            'name' => $product_name,
+            'price' => $item_price,
+            'quantity' => $item_quantity
+        );
+
+        $item_count += $item_quantity; // Update item count
+        $product_total += $item_price * $item_quantity; // Update product total
+    }
+
+    $user_id = $order->get_user_id(); // Get the user ID associated with the order
+
+    echo json_encode(array(
+        'success' => true,
+        'order_items' => $order_items,
+        'item_count' => $item_count, // Return item count
+        'product_total' => $product_total, // Return product total
+        'user_id' => $user_id // Return user ID
+    ));
+    wp_die();
+}
+
+/**
+ * HBF_OrderData
+ */
 add_action('wp_ajax_fetch_order_details_for_credit', 'fetch_order_details_for_credit');
 add_action('wp_ajax_nopriv_fetch_order_details_for_credit', 'fetch_order_details_for_credit');
-
-
 function fetch_order_details_for_credit() {
     if (!isset($_POST['order_id'])) {
         echo json_encode(array('success' => false, 'message' => 'No order ID provided.'));
@@ -532,7 +457,9 @@ function fetch_order_details_for_credit() {
 }
 
 
-// AJAX handler function to fetch billing info
+/**
+ * HBF_UserBillingInfo
+ */
 function fetch_billing_info() {
 	// Verify nonce
 	if (!isset($_POST['_ajax_nonce']) || !wp_verify_nonce($_POST['_ajax_nonce'], 'fetch_billing_info_nonce')) {
@@ -552,7 +479,10 @@ function fetch_billing_info() {
 }
 add_action('wp_ajax_fetch_billing_info', 'fetch_billing_info');
 
-//Admin Bar Information User Switching
+/**
+ * HBF_ManualOrderItem
+ */
+add_action('admin_bar_menu', 'add_switching_info_to_admin_bar', 100);
 function add_switching_info_to_admin_bar($admin_bar) {
 	// Check if the current user has the 'manual_ordering' capability
 	if (current_user_can('manual_ordering')) {
@@ -583,73 +513,75 @@ function add_switching_info_to_admin_bar($admin_bar) {
 		));
 	}
 }
-add_action('admin_bar_menu', 'add_switching_info_to_admin_bar', 100);
+
 
 // Add Custom Fields to WooCommerce Checkout
-function custom_checkout_fields( $fields ) {
-	if ( current_user_can( 'view_extra_fields' ) ) {
-		// Add Order Type field
-		$fields['order']['order_type'] = array(
-			'label'     => __('Order Type', 'woocommerce'),
-			'required'  => false,
-			'class'     => array('form-row-wide', 'order-type-field'),
-			'clear'     => true,
-			'type'      => 'select',
-			'options'   => array(
-				'national' => 'National',
-				'international' => 'International'
-			),
-			'default'   => 'national'
-		);
+// function custom_checkout_fields( $fields ) {
+// 	if ( current_user_can( 'view_extra_fields' ) ) {
+// 		// Add Order Type field
+// 		$fields['order']['order_type'] = array(
+// 			'label'     => __('Order Type', 'woocommerce'),
+// 			'required'  => false,
+// 			'class'     => array('form-row-wide', 'order-type-field'),
+// 			'clear'     => true,
+// 			'type'      => 'select',
+// 			'options'   => array(
+// 				'national' => 'National',
+// 				'international' => 'International'
+// 			),
+// 			'default'   => 'national'
+// 		);
 
-		$fields['order']['order_shipping_custom'] = array(
-			'label'     => __('Shipping', 'woocommerce'),
-			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
-			'required'  => false,
-			'class'     => array('form-row-first', 'custom-field'),
-			'clear'     => false
-		);
+// 		$fields['order']['order_shipping_custom'] = array(
+// 			'label'     => __('Shipping', 'woocommerce'),
+// 			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
+// 			'required'  => false,
+// 			'class'     => array('form-row-first', 'custom-field'),
+// 			'clear'     => false
+// 		);
 
-		$fields['order']['order_admin_fee'] = array(
-			'label'     => __('Admin Fee', 'woocommerce'),
-			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
-			'required'  => false,
-			'class'     => array('form-row-first', 'custom-field'),
-			'clear'     => false
-		);
+// 		$fields['order']['order_admin_fee'] = array(
+// 			'label'     => __('Admin Fee', 'woocommerce'),
+// 			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
+// 			'required'  => false,
+// 			'class'     => array('form-row-first', 'custom-field'),
+// 			'clear'     => false
+// 		);
 
-		$fields['order']['order_pallet_fee'] = array(
-			'label'     => __('Pallet Fee', 'woocommerce'),
-			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
-			'required'  => false,
-			'class'     => array('form-row-first', 'custom-field'),
-			'clear'     => false
-		);
+// 		$fields['order']['order_pallet_fee'] = array(
+// 			'label'     => __('Pallet Fee', 'woocommerce'),
+// 			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
+// 			'required'  => false,
+// 			'class'     => array('form-row-first', 'custom-field'),
+// 			'clear'     => false
+// 		);
 
-		$fields['order']['order_misc_fee'] = array(
-			'label'     => __('Miscellaneous Fee', 'woocommerce'),
-			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
-			'required'  => false,
-			'class'     => array('form-row-first', 'custom-field'),
-			'clear'     => false
-		);
+// 		$fields['order']['order_misc_fee'] = array(
+// 			'label'     => __('Miscellaneous Fee', 'woocommerce'),
+// 			'placeholder'   => _x('$', 'placeholder', 'woocommerce'),
+// 			'required'  => false,
+// 			'class'     => array('form-row-first', 'custom-field'),
+// 			'clear'     => false
+// 		);
 
-		// Add Update Total button
-		$fields['order']['update_total_button'] = array(
-			'type' => 'button',
-			'class' => array('button', 'update-total-button'),
-			'label' => __('Update Total', 'woocommerce'),
-			'attributes' => array(
-				'disabled' => 'disabled',  // The button will be disabled initially
-				'onclick' => 'updateCartTotals()'  // JavaScript function to be called when the button is clicked
-			)
-		);
-	}
-	return $fields;
-}
+// 		// Add Update Total button
+// 		$fields['order']['update_total_button'] = array(
+// 			'type' => 'button',
+// 			'class' => array('button', 'update-total-button'),
+// 			'label' => __('Update Total', 'woocommerce'),
+// 			'attributes' => array(
+// 				'disabled' => 'disabled',  // The button will be disabled initially
+// 				'onclick' => 'updateCartTotals()'  // JavaScript function to be called when the button is clicked
+// 			)
+// 		);
+// 	}
+// 	return $fields;
+// }
 //add_filter( 'woocommerce_checkout_fields' , 'custom_checkout_fields' );
 
-// Calculate Additional Fees
+/**
+ * HBF_CartCaculateFees
+ */
 add_action( 'woocommerce_cart_calculate_fees', 'custom_checkout_fee' );
 function custom_checkout_fee() {
     if ( current_user_can( 'view_extra_fields' ) ) {
@@ -689,7 +621,10 @@ function custom_checkout_fee() {
 	}
 }
 
-// Display Custom Fields Values in the Order Edit Screen
+/**
+ * HBF_AdminOrderHelper
+ */
+add_action( 'woocommerce_admin_order_data_after_billing_address', 'display_custom_fields_in_admin_order', 10, 1 );
 function display_custom_fields_in_admin_order( $order ) {
 	echo '<p><strong>' . __('Order Type') . ':</strong> ' . get_post_meta( $order->get_id(), '_order_type', true ) . '</p>';
 	echo '<div style="clear:both;"></div>';  // Clear the float to ensure the next fields line up 2x2
@@ -698,8 +633,11 @@ function display_custom_fields_in_admin_order( $order ) {
 	echo '<p><strong>' . __('Pallet Fee') . ':</strong> ' . get_post_meta( $order->get_id(), '_order_pallet_fee', true ) . '</p>';
 	echo '<p><strong>' . __('Miscellaneous Fee') . ':</strong> ' . get_post_meta( $order->get_id(), '_order_misc_fee', true ) . '</p>';
 }
-add_action( 'woocommerce_admin_order_data_after_billing_address', 'display_custom_fields_in_admin_order', 10, 1 );
 
+
+/**
+ * HBF_User
+ */
 function get_old_user() {
 	$cookie = '';
 	if(function_exists('user_switching_get_olduser_cookie')){
@@ -725,13 +663,16 @@ function is_old_admin(){
 		$old_user = get_old_user();
 		if($old_user && (in_array('administrator', $old_user->roles) || user_can($old_user->ID, 'view_extra_fields'))){
 			$flag_old_user = true;
+
 		}
 	}
 
 	return $flag_old_user;
 }
 
-// Add a custom select fields for packing option fee
+/**
+ * HBF_CheckoutFlowHelper
+ */
 add_action( 'woocommerce_review_order_before_shipping', 'checkout_shipping_form_packing_addition', 20 );
 function checkout_shipping_form_packing_addition( ) {
 	$domain = 'woocommerce';
@@ -1133,13 +1074,6 @@ add_action('woocommerce_checkout_after_customer_details', function(){
 	//echo do_shortcode('[woocommerce_cart]');
 });
 
-// Remove "In Stock" without affecting "Out of Stock"
-function custom_remove_in_stock_text( $html, $product ) {
-	if ( $product->is_in_stock() ) {
-		return '';
-	}
-	return $html;
-}
 
 add_filter( 'show_admin_bar', 'hf_hide_admin_bar');
 function hf_hide_admin_bar(){

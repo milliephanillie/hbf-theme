@@ -1,5 +1,5 @@
 <?php
-namespace Harrison\WCHelpers;
+namespace Harrison\Utils;
 
 class HBF_WC_OrderStatus {
     public function __construct() {

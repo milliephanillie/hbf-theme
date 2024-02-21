@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
 
         // AJAX request to server to load quote information...
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'load_quote_details',

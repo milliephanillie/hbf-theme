@@ -46,7 +46,7 @@ abstract class HBF_Shortcodes {
                 $handle,
                 $resource,
                 ['jquery'],
-                '1.0.3',
+                '1.0.46',
                 $footer
             );
         }

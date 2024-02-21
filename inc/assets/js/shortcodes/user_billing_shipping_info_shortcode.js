@@ -16,7 +16,7 @@ $("#shortcode-user-search").on("input", function() {
     var searchTerm = $(this).val();
     if (searchTerm.length >= 3) {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "search_users_for_manual_orders",
@@ -69,7 +69,7 @@ $(document).on("click", ".shortcode-user-result", function() {
 
     // Populate the Billing and Shipping Information forms with the selected user data
     $.ajax({
-        url: window.php_vars.ajaxurl,
+        url: window.php_vars.adminAjaxUrl,
         type: "POST",
         data: {
             action: "get_user_billing_shipping_info",
@@ -133,7 +133,7 @@ $("#loadPreviousOrder").off("click").on("click", function() {
     } else {
         // Make an AJAX request to fetch the previous orders if not currently visible
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "fetch_previous_orders",
@@ -223,9 +223,8 @@ function storeCreditInfoInLocalStorage(customerName, creditBalance) {
 
 // Get Customer Credit Info
 function fetchCustomerCreditInfo(userId, callback) {
-    console.log("Calling fetchCustomerCreditInfo with userId:", userId);
     $.ajax({
-        url: window.php_vars.ajaxurl,
+        url: window.php_vars.adminAjaxUrl,
         type: 'POST',
         data: {
             action: 'get_customer_credit_info',
@@ -253,6 +252,7 @@ function fetchCustomerCreditInfo(userId, callback) {
         error: function(jqXHR, textStatus, errorThrown) {
             console.error("AJAX Error:", textStatus, errorThrown);
             alert("Error fetching customer credit info.");
+            alert("AJAX Error:", textStatus, errorThrown);
         }
     });
 }
@@ -273,7 +273,7 @@ $('#switchToUser').click(function() {
 
     // AJAX call to switch user
     $.ajax({
-        url: window.php_vars.ajaxurl,
+        url: window.php_vars.adminAjaxUrl,
         type: 'POST',
         data: {
             action: 'switch_to_selected_user',
@@ -292,9 +292,9 @@ $('#switchToUser').click(function() {
                 // Retrieve selectedUserId from sessionStorage
                 var userId = sessionStorage.getItem('selectedUserId');
 
-                fetchCustomerCreditInfo(selectedUserId, function(customerName, creditBalance) {
-                    showCreditModal(customerName, creditBalance);
-                });
+                // fetchCustomerCreditInfo(selectedUserId, function(customerName, creditBalance) {
+                //     showCreditModal(customerName, creditBalance);
+                // });
                 location.reload();
             } else {
                 alert('Error switching to customer: ' + data.message);
@@ -319,14 +319,14 @@ $(document).on("click", ".add-to-manual-order-button", function() {
     if (userConfirmed) {
         populateCartWithOrder(orderId, userId);
         // Retrieve and update the credit balance
-        fetchCustomerCreditInfo(userId, function(customerName, creditBalance) {
-            // Update the sessionStorage with the new credit info
-            sessionStorage.setItem('customerCreditInfo', JSON.stringify({ customerName: customerName, creditBalance: creditBalance }));
+        // fetchCustomerCreditInfo(userId, function(customerName, creditBalance) {
+        //     // Update the sessionStorage with the new credit info
+        //     sessionStorage.setItem('customerCreditInfo', JSON.stringify({ customerName: customerName, creditBalance: creditBalance }));
 
-            // Update the credit modal with the new information
-            $('#creditApplicationModal .customer-name').text('Customer: ' + customerName);
-            $('#creditApplicationModal .credit-balance').text('Credit Balance: $' + creditBalance);
-        });
+        //     // Update the credit modal with the new information
+        //     $('#creditApplicationModal .customer-name').text('Customer: ' + customerName);
+        //     $('#creditApplicationModal .credit-balance').text('Credit Balance: $' + creditBalance);
+        // });
     }
 });
 
@@ -337,7 +337,7 @@ function populateCartWithOrder(orderId, userId) {
     $loadingIndicator.show();
 
     $.ajax({
-        url: window.php_vars.ajaxurl,
+        url: window.php_vars.adminAjaxUrl,
         type: "POST",
         dataType: "json",
         cache: false,
@@ -366,5 +366,63 @@ function populateCartWithOrder(orderId, userId) {
             // Handle low-level network errors
             alert("An error occurred while processing your request. Please try again.");
         }
+    });
+}
+
+function fetchOrderDetails(orderId, detailsRow, callback) {
+    $.ajax({
+        url: window.php_vars.adminAjaxUrl,
+        type: "POST",
+        data: {
+            action: "fetch_order_details",
+            order_id: orderId
+        },
+        success: function(response) {
+            console.log(response); // Log the response for debugging
+            var data = JSON.parse(response);
+            if (data.success) {
+                var dropdownContent = "<ul>";
+                var productTotal = 0;
+                var refundedTotal = 0;
+                var totalItemCount = 0; // Variable to keep track of total item count
+
+                // Loop through all items
+                data.order_items.forEach(function(item) {
+                    var itemTotal = parseFloat(item.price) * parseInt(item.quantity);
+                    productTotal += itemTotal;
+                    var nonRefundedQuantity = item.quantity - (item.refunded_quantity || 0);
+                    totalItemCount += nonRefundedQuantity; // Add to total item count
+                    dropdownContent += "<li>" + item.name + " - $" + item.price + " x " + nonRefundedQuantity + "</li>";
+
+                    // If there is a refunded quantity, display it in red
+                    if (item.refunded_quantity) {
+                        var refundedAmount = parseFloat(item.refunded_amount);
+                        refundedTotal += refundedAmount;
+                        dropdownContent += "<li style=\'color: red;\'>" + item.name + " - Refunded: $" + refundedAmount.toFixed(2) + " x " + item.refunded_quantity + "</li>";
+                    }
+                });
+
+                dropdownContent += "</ul>";
+                dropdownContent += "<div class=\'product-total\'>Product Total w/o Additional Fees: $" + (productTotal - refundedTotal).toFixed(2) + "</div>";
+
+                // Get the user ID and username from the selected user
+                var selectedUserId = $("#shortcode-user-search").data("selected-user-id");
+                var selectedUserName = $("#shortcode-user-search").val(); // Get the username from the input value
+
+                // Add the "Add to Order" button to the dropdown content with the total item count, user ID, and username
+                dropdownContent += "<button class=\'add-to-manual-order-button\' data-order-id=\'" + orderId + "\' data-item-count=\'" + totalItemCount + "\' data-user-id=\'" + selectedUserId + "\' data-user-name=\'" + selectedUserName + "\'>Add to Order</button>";
+
+                detailsRow.find(".order-details-dropdown").html(dropdownContent);
+                detailsRow.show();
+            } else {
+                console.error("Error: ", data.error); // Log any errors
+            }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            console.error("AJAX Error: ", textStatus, errorThrown); // Log AJAX errors
+            alert("An error occurred while fetching the order details.");
+        }
+    }).always(function() {
+        if (typeof callback === "function") callback(); // Always remove the loading state
     });
 }

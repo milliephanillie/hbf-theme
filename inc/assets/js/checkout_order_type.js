@@ -33,7 +33,7 @@ jQuery(function($) {
 
         $.ajax({
             type: 'POST',
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             data: {
                 'action': 'update_custom_fees',
                 'fee_type': feeType,

@@ -13,7 +13,7 @@ jQuery(document).ready(function($) {
         var searchTerm = $(this).val();
         if (searchTerm.length >= 3) {
             $.ajax({
-                url: php_vars.adminAjaxUrl,
+                url: window.php_vars.adminAjaxUrl,
                 type: "POST",
                 data: {
                     action: "search_users_for_manual_orders",
@@ -64,7 +64,7 @@ jQuery(document).ready(function($) {
 
         // Populate the Billing and Shipping Information forms with the selected user data
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "get_user_billing_shipping_info",
@@ -104,7 +104,7 @@ jQuery(document).ready(function($) {
 
         // Check user role and capabilities
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "check_user_role_and_capabilities",
@@ -127,7 +127,7 @@ jQuery(document).ready(function($) {
                         }
                         if (userCode.toUpperCase() === code) {
                             $.ajax({
-                                url: php_vars.adminAjaxUrl,
+                                url: window.php_vars.adminAjaxUrl,
                                 type: "POST",
                                 data: {
                                     action: "delete_user",
@@ -185,7 +185,7 @@ jQuery(document).ready(function($) {
 
         // Make an AJAX request to fetch the previous orders
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "fetch_previous_orders",
@@ -263,7 +263,7 @@ jQuery(document).ready(function($) {
     // Function to populate the cart with the selected order
     function populateCartWithOrder(orderId, userId) {
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "populate_cart_with_order",
@@ -286,7 +286,7 @@ jQuery(document).ready(function($) {
 
     function switchToUser(userId, callback) {
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "switch_to_selected_user",
@@ -309,7 +309,7 @@ jQuery(document).ready(function($) {
     // Function to fetch order details and populate the dropdown with a callback for loading state
     function fetchOrderDetails(orderId, detailsRow, callback) {
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "fetch_order_details",

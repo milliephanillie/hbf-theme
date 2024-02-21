@@ -42,12 +42,20 @@ $init = new HBF_Init();
 
 use Harrison\Includes\HBF_Theme;
 use Harrison\Includes\HBF_User;
-use Harrison\Includes\HBF_FooterModal;
+//use Harrison\Includes\HBF_FooterModal;
 use Harrison\Includes\HBF_TemplateRedirection;
+use Harrison\Includes\HBF_ProductTabs;
 
+use Harrison\Utils\HBF_WC_OrderStatus;
 use Harrison\Utils\HBF_PartialPaymentSubmission;
 use Harrison\Utils\HBF_ManualOrderItem;
 use Harrison\Utils\HBF_PDFGenerator;
+
+
+use Harrison\WCHelpers\HBF_CheckoutFlowHelper;
+
+HBF_CheckoutFlowHelper::boot();
+HBF_CheckoutFlowHelper::boot_ui();
 
 use Harrison\Shortcodes\HBF_ManageQuoteShortcode;
 use Harrison\Shortcodes\HBF_GuestUserCreationFormShortcode;
@@ -59,14 +67,7 @@ use Harrison\Shortcodes\HBF_DisplayBillingShippingInfoShortcode;
 use Harrison\Shortcodes\HBF_AddCreditsToCustomerShortcode;
 use Harrison\Shortcodes\HBF_QuoteButtonShortcode;
 use Harrison\Shortcodes\HBF_LoadUserShortcode;
-
-use Harrison\WCHelpers\HBF_ProductTabsHelper;
-use Harrison\WCHelpers\HBF_ReviewOrderHelper;
-use Harrison\WCHelpers\HBF_RedirectHelper;
-use Harrison\WCHelpers\HBF_OrderDataHelper;
-use Harrison\WCHelpers\HBF_CreditInfoHelper;
-use Harrison\WCHelpers\HBF_CheckoutHelper;
-use Harrison\WCHelpers\HBF_WC_OrderStatus;
+use Harrison\Shortcodes\HBF_CustomCartTotalShortcode;
 
 use Harrison\AJAX\HBF_CreateCustomer;
 use Harrison\AJAX\HBF_CheckUserStatus;
@@ -97,10 +98,12 @@ function load_hbf_classes() {
     $hbfTheme = new HBF_Theme();
     $hbfUser = new HBF_User();
     $templateRedirection = new HBF_TemplateRedirection();
+    $productTabs = new HBF_ProductTabs();
 
     //Utils
     $partialPayment = new HBF_PartialPaymentSubmission();
     $manualOrderItem = new HBF_ManualOrderItem();
+    $wcOrderStatus = new HBF_WC_OrderStatus();
 
     //Shortcodes
     $manageQuoteSC = new HBF_ManageQuoteShortcode();
@@ -113,14 +116,7 @@ function load_hbf_classes() {
     $addCreditsToCustomerSC = new HBF_AddCreditsToCustomerShortcode();
     $quoteButtonSC = new HBF_QuoteButtonShortcode();
     $loadUserSC = new HBF_LoadUserShortcode();
-
-    //WCHelpers
-    $productTabsHelper = new HBF_ProductTabsHelper();
-    $reviewOrderHelper = new HBF_ReviewOrderHelper();
-    $redirectHelper = new HBF_RedirectHelper();
-    $orderDataHelper = new HBF_OrderDataHelper();
-    $creditInfoHelper = new HBF_CreditInfoHelper();
-    $checkoutHelper = new HBF_CheckoutHelper();
+    $customCartTotal = new HBF_CustomCartTotalShortcode();
 
     // AJAX
     $updateShippingMethod = new HBF_UpdateShippingMethod();

@@ -1,13 +1,43 @@
 <?php
 namespace Harrison\WCHelpers;
 
+use Harrison\Includes\HBF_User;
+
 class HBF_CartCaculateFees {
-    public function __construct() {
-        add_action( 'woocommerce_cart_calculate_fees', [$this, 'custom_checkout_fee'] );
-        add_action( 'woocommerce_cart_calculate_fees', [$this, 'add_packaging_fee'], 20, 1 );
+    public static function init_hooks() {
+        add_action('woocommerce_cart_calculate_fees', ['self', 'apply_credit_as_fee']);
+        add_action('woocommerce_cart_calculate_fees', ['self', 'custom_checkout_fee'] );
+        add_action('woocommerce_cart_calculate_fees', ['self', 'add_packaging_fee'], 20, 1 );
+        add_action('woocommerce_cart_calculate_fees', ['self', 'custom_fee_for_sample_kit'], 20);
     }
 
-    public function custom_checkout_fee() {
+    public static function apply_credit_as_fee(\WC_Cart $cart) {
+        $creditAmount = \WC()->session->get('applied_credit');
+        if ($creditAmount) {
+            $cart->add_fee(__('Credit Applied', 'woocommerce'), -$creditAmount, false); // Negative fee
+        }
+    }
+
+    public static function custom_fee_for_sample_kit($cart) {
+        if (is_admin() && !defined('DOING_AJAX')) return;
+
+        $sample_kit_id = 1580; // Sample Kit Product ID
+        $sample_kit_in_cart = false;
+
+        foreach ($cart->get_cart_contents() as $key => $item) {
+            if ($item['product_id'] == $sample_kit_id) {
+                $sample_kit_in_cart = true;
+                unset($cart->cart_contents[$key]['data']->needs_shipping);
+                break;
+            }
+        }
+
+        if ($sample_kit_in_cart) {
+            $cart->add_fee('Sample Kit Shipping Addendum', 5);
+        }
+    }
+
+    public static function custom_checkout_fee() {
         if ( current_user_can( 'view_extra_fields' ) ) {
             $shipping = \WC()->session->get('shipping-amount') ?? 0;
             $admin_fee = isset( $_POST['order_admin_fee'] ) ? floatval($_POST['order_admin_fee']) : 0;
@@ -45,7 +75,7 @@ class HBF_CartCaculateFees {
         }
     }
 
-    public function add_packaging_fee( $cart ) {
+    public static function add_packaging_fee( $cart ) {
         if ( is_admin() && ! defined( 'DOING_AJAX' ) )
             return;
 

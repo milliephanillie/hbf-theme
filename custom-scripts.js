@@ -20,7 +20,7 @@ jQuery(document).ready(function($) {
 			var selectedUserId = $("#shortcode-user-search-2").data("selected-user-id");
 
 			$.ajax({
-				url: php_vars.adminAjaxUrl,
+				url: window.php_vars.adminAjaxUrl,
 				type: "POST",
 				data: {
 					action: "ajax_generate_print_page_content",
@@ -52,7 +52,7 @@ jQuery(document).ready(function($) {
     if (confirm('Are you sure you want to reset the credit balance for this user?')) {
         // AJAX request to reset credit balance
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'reset_credit_balance',
@@ -150,7 +150,7 @@ jQuery(document).ready(function($) {
  
         // New $.ajax structure
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             dataType: 'json',
             data: {
@@ -189,7 +189,7 @@ jQuery(document).ready(function($) {
 		
     var nonce = $(this).data('nonce');
     $.ajax({
-        url: php_vars.adminAjaxUrl,
+        url: window.php_vars.adminAjaxUrl,
         type: 'POST',
         data: {
             action: 'process_split_order',
@@ -223,7 +223,7 @@ jQuery(document).ready(function($) {
 
     function updateUserNotification() {
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             dataType: 'json',
             data: {
@@ -258,7 +258,7 @@ jQuery(document).ready(function($) {
 	
 	function updateCloakingDisplay() {
 		$.ajax({
-			url: php_vars.adminAjaxUrl,
+			url: window.php_vars.adminAjaxUrl,
 			type: 'POST',
 			dataType: 'json',
 			data: {
@@ -292,7 +292,7 @@ jQuery(document).ready(function($) {
 
 	function updateReverseCloakingDisplay() {
 		$.ajax({
-			url: php_vars.adminAjaxUrl,
+			url: window.php_vars.adminAjaxUrl,
 			type: 'POST',
 			dataType: 'json',
 			data: {

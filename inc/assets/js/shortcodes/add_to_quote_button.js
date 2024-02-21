@@ -13,7 +13,7 @@ jQuery(document).ready(function($) {
 
         // Perform the AJAX request
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: orderData,
             success: function(response) {

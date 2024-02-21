@@ -5,7 +5,7 @@ jQuery(document).ready(function($) {
         var searchTerm = $(this).val();
         if (searchTerm.length >= 3) {
             $.ajax({
-                url: window.php_vars.ajaxurl,
+                url: window.php_vars.adminAjaxUrl,
                 type: "POST",
                 data: {
                     action: "search_users_for_manual_orders",
@@ -56,7 +56,7 @@ jQuery(document).ready(function($) {
         $("#selected_user_id2").val(selectedUserId);
 
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "get_customer_info", // Ensure this AJAX action is properly defined on the server side
@@ -103,7 +103,7 @@ jQuery(document).ready(function($) {
             });
         } else {
             $.ajax({
-                url: window.php_vars.ajaxurl,
+                url: window.php_vars.adminAjaxUrl,
                 type: "POST",
                 data: {
                     action: "fetch_previous_orders_for_credits",
@@ -188,7 +188,7 @@ jQuery(document).ready(function($) {
 
     function fetchOrderDetailsForCredit(orderId, detailsRow, callback) {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "fetch_order_details_for_credit",
@@ -304,7 +304,7 @@ jQuery(document).ready(function($) {
         console.log("Credit Module: Prepared Credit Data for Submission", creditData);
 
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "apply_credit_to_customer_account",
@@ -383,7 +383,7 @@ jQuery(document).ready(function($) {
         });
 
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: "POST",
             data: {
                 action: "apply_credit_to_customer_account",

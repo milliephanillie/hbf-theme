@@ -138,7 +138,7 @@ jQuery(document).ready(function($) {
 
 	// Perform the AJAX call to get order details
 		$.ajax({
-			url: window.php_vars.ajaxurl, // Use the localized 'ajaxurl' variable
+			url: window.php_vars.adminAjaxUrl, // Use the localized 'ajaxurl' variable
 			type: 'POST',
 			data: {
 				action: 'get_order_details',
@@ -436,7 +436,7 @@ customFeesHtml += '</div>';
 		var refundReason = $('#refund-reason').val();
 
 		$.ajax({
-			url: window.php_vars.ajaxurl,
+			url: window.php_vars.adminAjaxUrl,
 			type: 'POST',
 			data: {
 				action: 'process_refund',
@@ -481,7 +481,7 @@ customFeesHtml += '</div>';
     };
 
     $.ajax({
-        url: window.php_vars.ajaxurl,
+        url: window.php_vars.adminAjaxUrl,
         type: 'POST',
         data: {
             action: 'process_refund',

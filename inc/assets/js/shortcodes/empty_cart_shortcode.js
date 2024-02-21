@@ -2,7 +2,7 @@ jQuery(document).ready(function($) {
     // Empty cart button click handler
     $('#emptyCart').click(function() {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'empty_cart'
@@ -24,7 +24,7 @@ jQuery(document).ready(function($) {
     // Enable/disable the EMPTY CART button based on the cart status
     function checkCartStatus() {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'check_cart_status'

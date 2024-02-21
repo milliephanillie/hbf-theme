@@ -4,7 +4,7 @@ jQuery(document).ready(function($) {
         var searchTerm = $(this).val();
         if (searchTerm.length >= 3) {
             $.ajax({
-                url: window.php_vars.ajaxurl,
+                url: window.php_vars.adminAjaxUrl,
                 type: 'POST',
                 data: {
                     action: 'search_users_for_manual_orders',
@@ -43,7 +43,7 @@ jQuery(document).ready(function($) {
     // Empty cart button click handler
     $('#emptyCart').click(function() {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'empty_cart'
@@ -65,7 +65,7 @@ jQuery(document).ready(function($) {
     // Optionally, you can enable/disable the EMPTY CART button based on the cart status
     function checkCartStatus() {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'check_cart_status'
@@ -86,7 +86,7 @@ jQuery(document).ready(function($) {
 
         // Make an AJAX request to fetch the previous orders
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'fetch_previous_orders',
@@ -148,7 +148,7 @@ jQuery(document).ready(function($) {
     // Function to populate the cart with the selected order
     function populateCartWithOrder(orderId, userId) {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'populate_cart_with_order',
@@ -172,7 +172,7 @@ jQuery(document).ready(function($) {
 
     function switchToUser(userId, callback) {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'switch_to_selected_user',
@@ -196,7 +196,7 @@ jQuery(document).ready(function($) {
     // Function to fetch order details and populate the dropdown
     function fetchOrderDetails(orderId, detailsRow) {
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'fetch_order_details',

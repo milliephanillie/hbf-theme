@@ -68,7 +68,7 @@ jQuery(document).ready(function($) {
 
         // AJAX call for form submission
         $.ajax({
-            url: window.php_vars.ajaxurl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: formData,
             success: function(response) {

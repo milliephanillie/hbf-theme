@@ -45,6 +45,12 @@ class HBF_User {
         return in_array('administrator', $user->roles) || self::is_old_admin() || user_can($user->ID, 'view_extra_fields');
     }
 
+    public static function is_admin_or_old_admin() {
+        $user = wp_get_current_user();
+        
+        return in_array('administrator', $user->roles) || self::is_old_admin();
+    }
+
     public static function is_hbf_admin() {
         return self::is_admin_or_can_view_extra_fields();
     }

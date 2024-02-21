@@ -31,8 +31,7 @@ class HBF_Init {
         ));
     }
 
-    
-
+    //todo put in post request
     public function save_user_billing_shipping_info() {
         if (isset($_POST['save_billing_info'])) {
             $user_id = intval($_POST['selected_user_id']);

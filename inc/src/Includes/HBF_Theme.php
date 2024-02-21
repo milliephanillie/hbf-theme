@@ -4,7 +4,7 @@ namespace Harrison\Includes;
 use Harrison\Includes\HBF_User;
 
 class HBF_Theme {
-    const ENQUEUE_VERSION = '1.0.0';
+    const ENQUEUE_VERSION = '1.0.01';
 
     public function __construct() {
         $this->boot();
@@ -31,10 +31,10 @@ class HBF_Theme {
     }
 
     public function enqueue_custom_scripts() {
-        $jspath = HBF_THEME_ASSETS_PATH .  trailingslashit('js');
-        $cssspath = HBF_THEME_ASSETS_PATH .  trailingslashit('css');
+        $jspath = HBF_THEME_ASSETS_URL .  trailingslashit('js');
+        $cssspath = HBF_THEME_ASSETS_URL .  trailingslashit('css');
 
-        wp_enqueue_style( 'font-awesome', HBF_THEME_ASSETS_URL . 'css/font-awesome/fontawesome-free-5.15.4-web/css/all.css' );
+        wp_enqueue_style( 'font-awesome', $cssspath . 'font-awesome/fontawesome-free-5.15.4-web/css/all.css' );
 
         wp_enqueue_script('index', $jspath . 'index.js', ['jquery'], self::ENQUEUE_VERSION, true);
         $php_vars = [
@@ -53,14 +53,12 @@ class HBF_Theme {
         ];
         wp_localize_script('index', 'php_vars', $php_vars);
 
+        wp_enqueue_script('custom-scripts', $jspath . 'custom-scripts.js', ['jquery'], self::ENQUEUE_VERSION, true);
+
+
         if (is_checkout() && ! is_wc_endpoint_url()) {
             if ( HBF_User::is_admin_or_can_view_extra_fields() ) {
                 wp_enqueue_script( 'checkout-order-type', $jspath . 'checkout_order_type.js', ['jquery'], self::ENQUEUE_VERSION, true );
-
-                $checkout_order_type = array(
-                    'update_session_nonce' => wp_create_nonce( 'update_session_nonce' ),
-                );
-                wp_localize_script( 'checkout-order-type', 'php_vars', $checkout_order_type );
             }
         }
     }
@@ -101,7 +99,10 @@ class HBF_Theme {
     }
 
     public function maybe_add_custom_user_view_class($classes) {
-        if (is_page(['manual-orders', 'checkout', 'thank-you', 'pay-later-thank-you']) && $this->user_has_extra_fields_view ) {
+        $old_user = HBF_User::get_old_user(); 
+        $has_extra_fields_view = $old_user ? user_can($old_user->ID, 'view_extra_fields') : current_user_can('view_extra_fields');
+        
+        if (is_page(['manual-orders', 'checkout', 'thank-you', 'pay-later-thank-you']) && $has_extra_fields_view ) {
             $classes[] = 'custom-user-view';
         }
 

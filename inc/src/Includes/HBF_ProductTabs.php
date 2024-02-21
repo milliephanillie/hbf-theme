@@ -1,7 +1,7 @@
 <?php
-namespace Harrison\WCHelpers;
+namespace Harrison\Includes;
 
-class HBF_ProductTabsHelper {
+class HBF_ProductTabs {
     private $tabs = null;
 
     private $template = null;

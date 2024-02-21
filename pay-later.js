@@ -34,7 +34,7 @@ jQuery(document).ready(function($) {
         var order_id = new URLSearchParams(window.location.search).get('order_id');
 
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'apply_payment_to_order',
@@ -71,7 +71,7 @@ jQuery(document).ready(function($) {
             e.preventDefault(); // Prevent the default form submission
 
             $.ajax({
-                url: php_vars.adminAjaxUrl,
+                url: window.php_vars.adminAjaxUrl,
                 type: 'POST',
                 data: {
                     action: 'apply_partial_payment_to_order',
@@ -105,7 +105,7 @@ jQuery(document).ready(function($) {
         };
 
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'update_billing_information',
@@ -133,7 +133,7 @@ jQuery(document).ready(function($) {
 		var userId = $(this).data('user-id'); 
 
 		$.ajax({
-			url: php_vars.adminAjaxUrl,
+			url: window.php_vars.adminAjaxUrl,
 			type: 'POST',
 			data: {
 				action: 'handle_payment_redirect',
@@ -161,7 +161,7 @@ jQuery(document).ready(function($) {
         var order_id = new URLSearchParams(window.location.search).get('order_id');
 
         $.ajax({
-            url: php_vars.adminAjaxUrl,
+            url: window.php_vars.adminAjaxUrl,
             type: 'POST',
             data: {
                 action: 'send_invoice_email',
@@ -190,7 +190,7 @@ $('#update-fees').on('click', function() {
     var miscFee = $('#misc-fee').val();
 
     $.ajax({
-        url: php_vars.adminAjaxUrl,
+        url: window.php_vars.adminAjaxUrl,
         type: 'POST',
         data: {
             action: 'update_custom_fees',
@@ -218,7 +218,7 @@ $('#update-custom-shipping').on('click', function() {
     var customShipping = $('#custom-shipping').val();
 
     $.ajax({
-        url: php_vars.adminAjaxUrl,
+        url: window.php_vars.adminAjaxUrl,
         type: 'POST',
         data: {
             action: 'update_custom_shipping',

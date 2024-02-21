@@ -1,19 +1,10 @@
 <?php
-namespace Harrison\WCHelpers;
+namespace Harrison\WC_Helpers;
 
-// todo consider removing error logs
-class HBF_OrderDataHelper {
+class HBF_GetOrderPaymentUrl {
     public function __construct() {
-        add_action('woocommerce_admin_order_data_after_billing_address', [$this, 'display_credit_in_admin_order'], 10, 1);
         add_action('woocommerce_order_partially_refunded', [$this, 'update_order_status_to_partial_refund'], 10, 2);
         add_filter('woocommerce_get_order_payment_url', [$this, 'custom_order_payment_url'], 30, 2);
-    }
-
-    public function display_credit_in_admin_order($order) {
-        $creditApplied = get_post_meta($order->get_id(), '_applied_credit', true);
-        if (!empty($creditApplied)) {
-            echo '<p><strong>' . __('Credit Applied:') . '</strong> ' . wc_price($creditApplied) . '</p>';
-        }
     }
 
     public function update_order_status_to_partial_refund($order_id, $refund_id) {
